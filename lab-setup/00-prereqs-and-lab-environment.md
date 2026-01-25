@@ -130,7 +130,6 @@ Save these in `/screenshots` using the naming format:
 
 **Minimum for this step**
 - `00-ad-upn-suffix-added.png` (Domains & Trusts showing the alternate UPN suffix)
-- `00-ad-test-user-upn-set.png` (User account tab showing UPN set to the new suffix)
 - `00-dc-ip-dns-settings.png` (DC IPv4 showing static IP + gateway + DNS)
 - `00-dhcp-scope-options.png` (DHCP options: Router 10.0.0.1 + DNS 10.0.0.10 + domain)
 - `00-win11-dhcp-lease.png` (Win11 `ipconfig` showing DHCP lease + DNS/DC)
