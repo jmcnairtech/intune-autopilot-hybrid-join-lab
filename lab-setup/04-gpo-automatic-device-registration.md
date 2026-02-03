@@ -1,19 +1,19 @@
 # 04 - GPO Automatic Device Registration (Hybrid Join)
 
 ## Goal
-Enable automatic device registration so **domain-joined Windows devices** register into **Microsoft Entra ID** as **Microsoft Entra hybrid joined**.
+Enable **automatic device registration** so domain-joined Windows devices register into **Microsoft Entra ID** and show as **Microsoft Entra hybrid joined**.
 
 ## Why this matters
-- Step 02 (SCP) tells Windows **which tenant** to register with.
-- Step 04 (GPO) tells Windows **to actually register**.
-Together, they enable Hybrid Join.
+- Step 02 (SCP) tells the device **which tenant** to register with.
+- Step 04 (GPO) tells the device **to perform** the registration.
+This is the trigger that makes hybrid join happen after domain join.
 
 ---
 
 ## What I configured (high level)
-- Created and linked a GPO to enable **automatic device registration**
+- Created and linked a GPO to enable **Register domain-joined computers as devices**
 - Applied policy to the Windows 11 VM
-- Validated registration using `dsregcmd /status`
+- Validated registration using `gpresult` and `dsregcmd /status`
 
 ---
 
@@ -31,19 +31,30 @@ Computer Configuration
 
 **Register domain-joined computers as devices** = **Enabled**
 
+### Scope
+- Linked at the domain level (`jmcnairtech.local`) for lab simplicity  
+  (Can be scoped later to device OUs in production)
+
 ---
 
 ## Validation (Windows 11 VM)
-Run:
-- `gpupdate /force`
-- reboot
 
-Then run:
+### A) Confirm the GPO applied
+Run (Admin CMD):
+- `gpupdate /force`
+- `gpresult /r`
+
+Expected:
+- The GPO appears under **Applied Group Policy Objects** (Computer Settings)
+
+### B) Check hybrid join status
+Run (Admin CMD):
 - `dsregcmd /status`
 
-Expected signals:
+Expected signals (timing can vary):
 - `DomainJoined : YES`
-- Device begins/finishes registration to Entra (DeviceId present)
+- `AzureAdJoined : NO` (this is normal for hybrid)
+- Registration indicators present (DeviceId populated / tenant info visible)
 - Device appears in Entra as **Microsoft Entra hybrid joined** (may take a few minutes)
 
 ---
@@ -53,16 +64,18 @@ Expected signals:
 Minimum:
 - `04-gpo-device-registration-enabled.png`
   - GPO setting showing **Enabled**
+- `04-win11-gpresult-applied-gpo.png`
+  - `gpresult /r` showing the GPO is applied (Computer Settings)
 - `04-win11-dsregcmd-status.png`
-  - `dsregcmd /status` showing DomainJoined and registration details
+  - `dsregcmd /status` output (DomainJoined + registration info)
 
-Optional (strong proof):
-- `04-gpresult-applied-gpo.png`
-  - `gpresult /r` showing the GPO is applied to the computer
+Optional:
+- `04-entra-device-hybrid-joined.png`
+  - Entra device record showing **Microsoft Entra hybrid joined**
 
 ---
 
 ## Done Criteria (to move to Step 05)
-- GPO is linked and applied to the Win11 VM
-- Win11 VM shows registration evidence in `dsregcmd /status`
+- GPO is linked and confirmed applied on the Win11 VM
+- `dsregcmd /status` shows hybrid registration progress/signals
 - Step 04 screenshots captured
