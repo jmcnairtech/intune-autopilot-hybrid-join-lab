@@ -96,8 +96,8 @@ Autopilot sign-in is cloud-first. If users are `@jmcnairtech.local`, sign-in and
 ### Autopilot Group Tag (optional but recommended)
 - Group Tag: `HYBRID-AP`
 
-### Intune Groups
-- `GRP-Autopilot-Hybrid-Devices` (dynamic devices)
+### Intune Groups### Intune Groups
+- `GRP-Autopilot-Hybrid-Join-Lab` (dynamic devices)
 - `GRP-Autopilot-Test-Users` (assigned users)
 
 ### Profiles / Policies
