@@ -1,10 +1,10 @@
-# Lab Setup – Hybrid Autopilot Build Steps
+# Lab Setup – Hybrid Autopilot + Enterprise Endpoint Lifecycle (Intune)
 
-This directory contains the staged implementation of a Hybrid Microsoft Entra ID Join + Windows Autopilot lab environment.
+This directory contains the step-by-step implementation of a Hybrid Microsoft Entra ID Join + Windows Autopilot lab environment, expanded to include enterprise endpoint management capabilities (security baseline, app deployment, compliance, and Conditional Access).
 
-Each file represents a milestone in building a working Hybrid Autopilot provisioning pipeline in a controlled Hyper-V lab.
+The sequencing mirrors enterprise rollout logic:
 
-The sequencing mirrors enterprise rollout logic: identity foundation → hybrid registration → ODJ plumbing → Autopilot targeting → provisioning control → validation.
+Identity foundation → hybrid registration → ODJ plumbing → Autopilot targeting → provisioning control → baseline configuration → app deployment → compliance → Conditional Access → validation/troubleshooting.
 
 ---
 
@@ -15,8 +15,8 @@ The sequencing mirrors enterprise rollout logic: identity foundation → hybrid 
 
 Defines:
 - Accounts and licensing requirements
-- Hyper-V networking and NAT configuration
-- DNS assumptions
+- Hyper-V networking and NAT assumptions
+- DNS requirements and forwarders
 - VM layout
 - Naming conventions
 
@@ -47,21 +47,27 @@ Enables domain-joined devices to discover the Entra tenant.
 
 ---
 
-### 03 – GPO Device Registration (Hybrid Join)  
-`03-gpo-device-registration-hybrid-join.md`
+### 03 – Domain Join the Windows 11 VM (Lab Client)  
+`03-domain-join-win11-vm.md`
 
-Introduces:
-- Device registration policy configuration
-- Validation of domain join state prior to automatic registration
+Validates:
+- Domain join capability
+- DNS pointing to the Domain Controller
+- AD computer object creation
+
+Prepares the client for GPO-based hybrid registration.
 
 ---
 
-### 04 – GPO Automatic Device Registration  
+### 04 – GPO Automatic Device Registration (Hybrid Join)  
 `04-gpo-automatic-device-registration.md`
 
 Enables:
 - Automatic device registration via Group Policy
-- Validation using `gpresult` and `dsregcmd /status`
+
+Validates:
+- Policy application via `gpresult`
+- Hybrid join state via `dsregcmd /status`
 
 Triggers hybrid registration behavior for domain-joined devices.
 
@@ -119,7 +125,7 @@ Configures:
 - ESP behavior for Hybrid Autopilot
 - Non-blocking provisioning settings for lab reliability
 
-Prepares environment for full end-to-end Autopilot testing.
+Prepares the environment for full end-to-end Autopilot testing.
 
 ---
 
@@ -129,49 +135,82 @@ Prepares environment for full end-to-end Autopilot testing.
 Executes:
 - Device reset to OOBE
 - Autopilot provisioning flow
-- ODJ processing
+- ODJ processing and reboot
 - Hybrid join confirmation
 
 Validates device state using:
 - `dsregcmd /status`
 - Active Directory computer object verification
-- Intune device enrollment confirmation
+- Intune enrollment confirmation
 
 ---
 
-### 11 – Validation and Troubleshooting  
-`11-validation-and-troubleshooting.md`
+### 11 – Baseline Configuration Profiles (Security + Endpoint Settings)  
+`11-baseline-configuration-profiles.md`
+
+Implements baseline controls such as:
+- BitLocker disk encryption policy (recovery keys escrowed)
+- Windows Hello for Business configuration (if used)
+- Microsoft Defender baseline settings (minimum viable hardening)
+
+Validates baseline enforcement on the enrolled device.
+
+---
+
+### 12 – Win32 App Packaging and Deployment  
+`12-win32-app-packaging-deployment.md`
+
+Covers:
+- Converting an installer to `.intunewin`
+- Creating install/uninstall commands
+- Detection rules and requirement rules
+- Deployment as Required / Available
+- Installation verification and troubleshooting
+
+---
+
+### 13 – Compliance Policy and Conditional Access  
+`13-compliance-and-conditional-access.md`
+
+Implements:
+- Device compliance policies (e.g., BitLocker required)
+- Conditional Access requiring compliant devices for access
+
+Validates:
+- Compliant access allowed
+- Non-compliant access blocked (controlled test)
+
+---
+
+### 14 – Validation and Troubleshooting  
+`14-validation-and-troubleshooting.md`
 
 Documents:
-- Common Hybrid Autopilot failure scenarios
-- ODJ errors
-- ESP timeouts
-- SCP misconfiguration
-- Device object mismatches
-
-Provides structured troubleshooting methodology across:
-
-- Active Directory
-- Microsoft Entra ID
-- Microsoft Intune
+- End-to-end validation checks across AD / Entra / Intune
+- Common Hybrid Autopilot failure scenarios:
+  - ODJ failures
+  - ESP timeouts
+  - SCP / discovery issues
+  - Device object mismatch
+  - Connector offline scenarios
+- Structured troubleshooting workflow and evidence collection
 
 ---
 
 ## Validation Philosophy
 
-Hybrid provisioning must be validated across three systems:
+Hybrid provisioning and lifecycle management are validated across three systems:
 
 - Active Directory  
 - Microsoft Entra ID  
 - Microsoft Intune  
 
-The lab emphasizes:
-
-- Clear goal definition per step
-- Configuration transparency
-- Measurable validation checkpoints
-- Screenshot evidence
-- Defined “Done Criteria”
+Each step includes:
+- Goal
+- Configuration summary
+- Validation checkpoints
+- Required screenshots
+- Clear “Done Criteria”
 
 ---
 
@@ -181,6 +220,8 @@ Upon completion, the lab supports:
 
 - Hybrid Microsoft Entra ID Join
 - Offline Domain Join via Intune Connector
-- Windows Autopilot provisioning
-- Controlled OOBE experience via ESP
-- Structured hybrid troubleshooting
+- Windows Autopilot provisioning with controlled ESP behavior
+- Baseline endpoint security configuration (BitLocker/Defender/WHfB as applicable)
+- Win32 application packaging and deployment
+- Compliance enforcement and Conditional Access validation
+- Structured troubleshooting and repeatable validation methodology
