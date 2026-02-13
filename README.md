@@ -1,96 +1,78 @@
-# Intune Autopilot + Microsoft Entra Hybrid Join Lab (Hyper-V)
+# Intune Autopilot + Hybrid Microsoft Entra ID Join – Enterprise Endpoint Lifecycle Lab
 
-This repository documents a hands-on enterprise simulation of the Windows provisioning lifecycle using:
+This repository documents a full enterprise endpoint lifecycle simulation using:
 
-- Windows Autopilot  
-- Microsoft Intune  
-- Microsoft Entra ID (Hybrid Join)  
-- Active Directory Domain Services  
+- Active Directory Domain Services (AD DS)
+- Microsoft Entra ID (Hybrid Join)
+- Microsoft Intune
+- Windows Autopilot (Hybrid Microsoft Entra ID Join)
+- Offline Domain Join (ODJ)
+- Security baseline configuration
+- Win32 application packaging and deployment
+- Compliance policies
+- Conditional Access enforcement
+- Structured troubleshooting methodology
 
-This project replicates a real-world hybrid endpoint modernization scenario, including identity integration, Autopilot provisioning, Offline Domain Join (ODJ), compliance enforcement, and structured troubleshooting.
+The lab replicates how a modern enterprise provisions, secures, and manages Windows endpoints in a hybrid identity environment.
 
-Lab Environment:
+---
 
-- Hyper-V  
-- Windows Server Domain Controller (`mcnairtech.local`)  
-- Windows 11 Enterprise client VM  
+## Lab Environment
+
+- Hyper-V
+- Windows Server Domain Controller (`jmcnairtech.local`)
+- Windows 11 Enterprise VM (Autopilot test device)
+- Microsoft Entra tenant with Intune
 
 ---
 
 ## Project Objectives
 
-This lab demonstrates practical understanding of:
+This project demonstrates practical, hands-on understanding of:
 
-- Hybrid identity (AD DS + Microsoft Entra ID)  
-- Windows Autopilot (Hybrid Azure AD Join) provisioning flow  
-- Offline Domain Join (ODJ) using the Intune Connector for Active Directory  
-- Enrollment Status Page (ESP) configuration and tuning  
-- Device configuration profiles and compliance enforcement  
-- Conditional Access requiring compliant devices  
-- Win32 application packaging and deployment  
-- Enterprise troubleshooting across Active Directory / Entra ID / Intune  
+- Hybrid identity architecture (AD DS + Microsoft Entra ID)
+- Service Connection Point (SCP) configuration
+- GPO-based automatic device registration
+- Intune Connector for Active Directory (ODJ)
+- Windows Autopilot (Hybrid Join deployment model)
+- Enrollment Status Page (ESP) configuration
+- Security baseline implementation (BitLocker / Defender / WHfB if used)
+- Win32 application packaging and deployment (.intunewin)
+- Device compliance configuration
+- Conditional Access enforcement based on device state
+- Cross-system validation and troubleshooting (AD / Entra / Intune)
 
-The focus of this project is identity plumbing, provisioning lifecycle validation, and operational troubleshooting — not just configuration.
-
----
-
-## Skills Demonstrated
-
-- Microsoft Intune device configuration and policy deployment  
-- Windows Autopilot (Hybrid Azure AD Join) architecture  
-- Offline Domain Join (ODJ) with Intune Connector  
-- Active Directory + Entra ID hybrid identity integration  
-- Service Connection Point (SCP) configuration  
-- GPO-based device registration  
-- Conditional Access policy enforcement  
-- Device compliance management  
-- Win32 app packaging (IntuneWin) and deployment  
-- Cross-platform troubleshooting methodology (AD / Entra / Intune)
+The focus is lifecycle management, not just configuration.
 
 ---
 
-## Architecture Scope
-
-The lab includes:
-
-- Entra Connect configuration (device options + SCP)
-- Hybrid join discovery via Service Connection Point
-- GPO device registration configuration
-- Intune Connector for Active Directory (ODJ processing)
-- Autopilot device registration and deployment profile (Hybrid Join)
-- Domain Join profile with OU targeting
-- Enrollment Status Page configuration
-- Baseline device configuration policies
-- Compliance policies
-- Conditional Access enforcement
-- Win32 app packaging and deployment
-- End-to-end validation and troubleshooting methodology
-
----
-
-## Provisioning Flow Simulated
-
-## Provisioning Flow Simulated
-
+## Provisioning & Management Flow Simulated
 ```
 Windows 11 Device (OOBE)
 ↓
-Autopilot Profile Detection
+Autopilot Device Registration (HWID)
 ↓
-Device Registers to Microsoft Entra ID
+Autopilot Deployment Profile Assignment
 ↓
-ODJ Request Sent to Intune Connector
+Offline Domain Join (Intune Connector)
 ↓
-Computer Object Created in mcnairtech.local
+Computer Object Created in Active Directory
 ↓
 Device Reboot
 ↓
-Hybrid Azure AD Join Completed
+Hybrid Microsoft Entra ID Join Finalized
 ↓
-Intune Policies + Apps Applied
+Intune Enrollment
 ↓
-Compliance + Conditional Access Enforcement
-
+Enrollment Status Page Processing
+↓
+Baseline Security Policies Applied
+↓
+Win32 Applications Deployed
+↓
+Compliance Evaluation
+↓
+Conditional Access Enforcement
 ```
 
 
@@ -98,41 +80,86 @@ Compliance + Conditional Access Enforcement
 
 ## Repository Structure
 
-`/lab-setup`  
-Step-by-step configuration notes with validation checkpoints and required screenshots  
+### `/lab-setup`
 
-`/architecture-diagrams`  
-Identity and provisioning flow diagrams  
+Step-by-step implementation of:
 
-`/screenshots`  
-Deployment evidence referenced by each lab step  
+- Infrastructure prerequisites
+- AD OU and user structure
+- Entra Connect + SCP configuration
+- GPO hybrid registration
+- Intune Connector (ODJ)
+- Autopilot device registration
+- Deployment profile configuration
+- Domain Join profile (ODJ)
+- Enrollment Status Page (ESP)
+- Baseline configuration profiles
+- Win32 app deployment
+- Compliance + Conditional Access
+- Validation & troubleshooting
+
+### `/architecture-diagrams`
+
+Logical identity and provisioning flow diagrams.
+
+### `/screenshots`
+
+Evidence screenshots referenced throughout the lab.
 
 ---
 
-## Documentation Approach
+## Skills Demonstrated
 
-Each lab step includes:
-
-- Defined goal  
-- Configuration summary  
-- Validation steps  
-- Required screenshots  
-- Troubleshooting notes  
-- Clear "Done Criteria"  
-
-This ensures repeatability and structured validation at every stage of the provisioning lifecycle.
+- Hybrid identity integration (AD DS + Entra ID)
+- SCP discovery configuration
+- Automatic device registration via GPO
+- ODJ architecture using Intune Connector
+- Autopilot Hybrid Join deployment design
+- Enrollment Status Page tuning for hybrid scenarios
+- BitLocker policy deployment and validation
+- Windows Hello for Business configuration (if implemented)
+- Microsoft Defender baseline configuration
+- Win32 packaging using `IntuneWinAppUtil`
+- Detection rule and requirement rule design
+- Compliance policy configuration
+- Conditional Access requiring compliant devices
+- `dsregcmd` validation and device state analysis
+- Structured hybrid troubleshooting methodology
 
 ---
 
 ## Validation Philosophy
 
-All configurations are validated across three core systems:
+Hybrid provisioning and endpoint lifecycle management are validated across three systems:
 
 - Active Directory  
 - Microsoft Entra ID  
 - Microsoft Intune  
 
-This “AD / Entra / Intune” validation model ensures accurate hybrid join state, device compliance, and successful lifecycle provisioning.
+Validation methods include:
+
+- `gpresult`
+- `dsregcmd /status`
+- AD computer object verification
+- Intune device state confirmation
+- Entra device registration state
+- Compliance state validation
+- Conditional Access behavior testing
+
+---
+
+## Scope
+
+This lab focuses on realistic hybrid endpoint provisioning and management patterns found in enterprise environments.
+
+It demonstrates:
+
+- Identity plumbing
+- Provisioning control
+- Security enforcement
+- Application deployment
+- Device compliance governance
+- Troubleshooting across identity boundaries
 
 ---
 
